@@ -1,21 +1,24 @@
-import React, {useEffect, useState} from "react";
-import {Form, Button} from "react-bootstrap";
+import React, { useEffect, useState } from "react";
+import { Form, Button } from "react-bootstrap";
 import axios from "axios";
 
-export default function AddParcelForm ({onAddParcel}) {
+export default function AddParcelForm({ onAddParcel }) {
     const [name, setName] = useState("");
     const [weight, setWeight] = useState("");
     const [dimensions, setDimensions] = useState("");
     const [status, setStatus] = useState("");
-    const [address, setAddress] = useState([]);
-    const [users, setUsers] = useState([]);
     const [sender, setSender] = useState(null);
     const [recipient, setRecipient] = useState(null);
+    const [users, setUsers] = useState([]);
+    const [senderAddresses, setSenderAddresses] = useState([]);
+    const [recipientAddresses, setRecipientAddresses] = useState([]);
 
     useEffect(() => {
         const fetchUsers = async () => {
             try {
-                const response = await axios.get(`${process.env.REACT_APP_API_URL}/users`);
+                const response = await axios.get(
+                    `${process.env.REACT_APP_API_URL}/users`
+                );
                 setUsers(response.data);
             } catch (error) {
                 console.error(error);
@@ -24,133 +27,148 @@ export default function AddParcelForm ({onAddParcel}) {
         fetchUsers();
     }, []);
 
+    useEffect(() => {
+        const fetchAddresses = async () => {
+            try {
+                if (sender) {
+                    const response = await axios.get(
+                        `${process.env.REACT_APP_API_URL}/users/${sender.id}/address`
+                    );
+                    setSenderAddresses(response.data);
+                }
+                if (recipient) {
+                    const response = await axios.get(
+                        `${process.env.REACT_APP_API_URL}/users/${recipient.id}/address`
+                    );
+                    setRecipientAddresses(response.data);
+                }
+            } catch (error) {
+                console.error(error);
+            }
+        };
+        fetchAddresses();
+    }, [sender, recipient]);
+
     const handleNameChange = (event) => setName(event.target.value);
     const handleWeightChange = (event) => setWeight(event.target.value);
-    const handleDimensionsChange = (event) => setDimensions(event.target.value);
+    const handleDimensionsChange = (event) =>
+        setDimensions(event.target.value);
     const handleStatusChange = (event) => setStatus(event.target.value);
 
-    const handleAddressChange = (event, index) => {
-        const {name, value} = event.target;
-        setAddress((address) =>
-            address.map((address, i) =>
-                i === index ? {...address, [name]: value} : address
-            )
-        );
-    };
-
     const handleUserChange = (event, role) => {
-        const { value } = event.target;
+        const {value} = event.target;
         const user = users.find((user) => user.id === parseInt(value));
         if (role === "sender") {
             setSender(user);
+            setSenderAddresses([]);
         } else if (role === "recipient") {
             setRecipient(user);
+            setRecipientAddresses([]);
         }
     };
 
-    //TODO: verify post body
-    //TODO: same as user, address must be recipient and sender provided from user addresses api
+    const handleAddressChange = (event, role) => {
+        const {value} = event.target;
+        if (role === "sender") {
+            const address = senderAddresses.find(
+                (address) => address.id === parseInt(value)
+            );
+            setSender({...sender, address});
+        } else if (role === "recipient") {
+            const address = recipientAddresses.find(
+                (address) => address.id === parseInt(value)
+            );
+            setRecipient({...recipient, address});
+        }
+    };
+
     const handleSubmit = async (event) => {
         event.preventDefault();
+        console.log(recipientAddresses, senderAddresses);
+        const address = [
+            {
+                "address" : {
+                    "id" : recipientAddresses[0].id
+                },
+                "role" : "RECIPIENT"
+            },
+            {
+                "address" : {
+                    "id" : senderAddresses[0].id
+                },
+                "role" : "SENDER"
+            }
+        ]
+
+        const users = [
+            {
+                "user" : recipient.id,
+                "role" : "RECIPIENT"
+            },
+            {
+                "user" : sender.id,
+                "role" : "SENDER"
+            }
+        ]
+
         const parcel = {
             name,
             weight,
             dimensions,
             status,
             address,
-            sender,
-            recipient,
+            users
         };
         try {
-            const response = await axios.post("/api/parcels", parcel);
+            const response = await axios.post(`${process.env.REACT_APP_API_URL}/parcels`, parcel);
             onAddParcel(response.data);
             setName("");
             setWeight("");
             setDimensions("");
             setStatus("");
-            setAddress([]);
             setSender(null);
             setRecipient(null);
+            setSenderAddresses([]);
+            setRecipientAddresses([]);
         } catch (error) {
             console.error(error);
         }
     };
 
-
     return (
         <Form onSubmit={handleSubmit}>
             <Form.Group controlId="formParcelName">
                 <Form.Label>Name</Form.Label>
-                <Form.Control
-                    type="text"
-                    value={name}
-                    onChange={handleNameChange}
-                    placeholder="Enter name"
-                />
+                <Form.Control type="text" placeholder="Enter parcel name" value={name} onChange={handleNameChange}
+                              required/>
             </Form.Group>
             <Form.Group controlId="formParcelWeight">
                 <Form.Label>Weight</Form.Label>
-                <Form.Control
-                    type="text"
-                    value={weight}
-                    onChange={handleWeightChange}
-                    placeholder="Enter weight"
-                />
+                <Form.Control type="number" placeholder="Enter parcel weight" value={weight}
+                              onChange={handleWeightChange} required/>
             </Form.Group>
+
             <Form.Group controlId="formParcelDimensions">
                 <Form.Label>Dimensions</Form.Label>
-                <Form.Control
-                    type="text"
-                    value={dimensions}
-                    onChange={handleDimensionsChange}
-                    placeholder="Enter dimensions"
-                />
+                <Form.Control type="text" placeholder="Enter parcel dimensions" value={dimensions}
+                              onChange={handleDimensionsChange} required/>
             </Form.Group>
+
             <Form.Group controlId="formParcelStatus">
                 <Form.Label>Status</Form.Label>
-                <Form.Control
-                    type="text"
-                    value={status}
-                    onChange={handleStatusChange}
-                    placeholder="Enter status"
-                />
+                <Form.Control as="select" value={status} onChange={handleStatusChange} required>
+                    <option value="">Choose status...</option>
+                    <option value="CREATED">Pending</option>
+                    <option value="IN_TRANSIT">In Transit</option>
+                    <option value="DELIVERED">Delivered</option>
+                    <option value="RETURNED">Returned</option>
+                </Form.Control>
             </Form.Group>
-            <h5>Address</h5>
-            {address.map((address, index) => (
-                <div key={index}>
-                    <Form.Group controlId={`formParcelAddressStreet${index}`}>
-                        <Form.Label>Street</Form.Label>
-                        <Form.Control type="text" name="street" value={address.street}
-                                      onChange={(event) => handleAddressChange(event, index)}
-                                      placeholder="Enter street"/>
-                    </Form.Group>
-                    <Form.Group
-                        controlId={`formParcelAddressCity${index}`}> <Form.Label>City</Form.Label> <Form.Control
-                        type="text"
-                        name="city"
-                        value={address.city}
-                        onChange={(event) => handleAddressChange(event, index)}
-                        placeholder="Enter city"/>
-                    </Form.Group> <Form.Group controlId={`formParcelAddressZip${index}`}>
-                    <Form.Label>Zip</Form.Label>
-                    <Form.Control
-                        type="text"
-                        name="zip"
-                        value={address.zip}
-                        onChange={(event) => handleAddressChange(event, index)}
-                        placeholder="Enter zip"
-                    />
-                </Form.Group>
-                </div>
-            ))}
-            <Button variant="secondary" onClick={() => setAddress([...address, {}])}>
-                Add Address
-            </Button>
-            <h5>Users</h5>
+
             <Form.Group controlId="formParcelSender">
-                <Form.Label>Select Sender</Form.Label>
-                <Form.Control as="select" onChange={(event) => handleUserChange(event, "sender")}>
-                    <option value="">Select a sender</option>
+                <Form.Label>Sender</Form.Label>
+                <Form.Control as="select" onChange={(event) => handleUserChange(event, "sender")} required>
+                    <option value="">Choose sender...</option>
                     {users.map((user) => (
                         <option key={user.id} value={user.id}>
                             {user.name}
@@ -158,10 +176,25 @@ export default function AddParcelForm ({onAddParcel}) {
                     ))}
                 </Form.Control>
             </Form.Group>
+
+            {sender && (
+                <Form.Group controlId="formParcelSenderAddress">
+                    <Form.Label>Sender Address</Form.Label>
+                    <Form.Control as="select" onChange={(event) => handleAddressChange(event, "sender")} required>
+                        <option value="">Choose sender address...</option>
+                        {senderAddresses.map((address) => (
+                            <option key={address.id} value={address.id}>
+                                {address.street}, {address.city}, {address.state}, {address.zip}
+                            </option>
+                        ))}
+                    </Form.Control>
+                </Form.Group>
+            )}
+
             <Form.Group controlId="formParcelRecipient">
-                <Form.Label>Select Recipient</Form.Label>
-                <Form.Control as="select" onChange={(event) => handleUserChange(event, "recipient")}>
-                    <option value="">Select a recipient</option>
+                <Form.Label>Recipient</Form.Label>
+                <Form.Control as="select" onChange={(event) => handleUserChange(event, "recipient")} required>
+                    <option value="">Choose recipient...</option>
                     {users.map((user) => (
                         <option key={user.id} value={user.id}>
                             {user.name}
@@ -169,9 +202,24 @@ export default function AddParcelForm ({onAddParcel}) {
                     ))}
                 </Form.Control>
             </Form.Group>
+
+            {recipient && (
+                <Form.Group controlId="formParcelRecipientAddress">
+                    <Form.Label>Recipient Address</Form.Label>
+                    <Form.Control as="select" onChange={(event) => handleAddressChange(event, "recipient")} required>
+                        <option value="">Choose recipient address...</option>
+                        {recipientAddresses.map((address) => (
+                            <option key={address.id} value={address.id}>
+                                {address.street}, {address.city}, {address.state}, {address.zip}
+                            </option>
+                        ))}
+                    </Form.Control>
+                </Form.Group>
+            )}
+
             <Button variant="primary" type="submit">
                 Add Parcel
             </Button>
         </Form>
     );
-};
+}

@@ -87,6 +87,16 @@ export default function SideNavbar() {
                     />
                 </ListItemButton>
                 <ListItemButton>
+                    <ListItemIcon as={Link} to={"/couriers/assign"}>
+                        <FavoriteBorderIcon/>
+                    </ListItemIcon>
+                    <ListItemText
+                        primary="Assign Courier"
+                        style={{color: "inherit", textDecoration: 'none'}}
+                        as={Link} to={"/couriers/assign"}
+                    />
+                </ListItemButton>
+                <ListItemButton>
                     <ListItemIcon as={Link} to={"/manage"}>
                         <DeleteOutlineIcon/>
                     </ListItemIcon>
@@ -94,6 +104,26 @@ export default function SideNavbar() {
                         primary="Parcels"
                         style={{color: "inherit", textDecoration: 'none'}}
                         as={Link} to={"/parcels"}
+                    />
+                </ListItemButton>
+                <ListItemButton>
+                    <ListItemIcon as={Link} to={"/route"}>
+                        <DeleteOutlineIcon/>
+                    </ListItemIcon>
+                    <ListItemText
+                        primary="Routes"
+                        style={{color: "inherit", textDecoration: 'none'}}
+                        as={Link} to={"/route"}
+                    />
+                </ListItemButton>
+                <ListItemButton>
+                    <ListItemIcon as={Link} to={"/parcels/route"}>
+                        <DeleteOutlineIcon/>
+                    </ListItemIcon>
+                    <ListItemText
+                        primary="Parcel Routes"
+                        style={{color: "inherit", textDecoration: 'none'}}
+                        as={Link} to={"/parcels/route"}
                     />
                 </ListItemButton>
             </List>

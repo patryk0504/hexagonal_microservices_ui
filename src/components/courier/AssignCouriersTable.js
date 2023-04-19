@@ -1,8 +1,11 @@
-import React from 'react';
-import { Table } from 'react-bootstrap';
+import React, {useState} from 'react';
+import {Table} from 'react-bootstrap';
+import AssignParcelModal from "./AssignParcelModal";
 import ParcelListModal from "./ParcelListModal";
 
-function CouriersTable({ couriers }) {
+function CouriersTable({couriers}) {
+
+
     return (
         <Table striped bordered hover>
             <thead>
@@ -21,7 +24,10 @@ function CouriersTable({ couriers }) {
                     <td>{courier.email}</td>
                     <td>{courier.phone}</td>
                     <td>{courier.vehicle}</td>
-                    <td><ParcelListModal courierId={courier.id}/></td>
+                    <td>
+                        <AssignParcelModal courierId={courier.id}/>
+                        <ParcelListModal courierId={courier.id}/>
+                    </td>
                 </tr>
             ))}
             </tbody>

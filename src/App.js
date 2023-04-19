@@ -10,6 +10,9 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min";
 import CouriersPage from "./components/courier/CouriersPage";
 import ParcelsPage from "./components/parcel/ParcelsPage";
+import RoutesPage from "./components/route/custom/RoutesPage";
+import ParcelsRoutePage from "./components/route/parcels/ParcelsRoutePage";
+import AssignCourierPage from "./components/courier/AssignCourierPage";
 
 
 function App() {
@@ -21,19 +24,25 @@ function App() {
 
                 <div className="container mt-5">
                     <Switch>
+                        <Route path="/couriers/assign">
+                            <AssignCourierPage />
+                        </Route>
                         <Route path="/couriers">
                             <CouriersPage />
                         </Route>
-                        <Route path="/parcels">
+                        <Route path="/parcels/route">
+                            <ParcelsRoutePage/>
+                        </Route>
+                        <Route path="/parcels" exact={true}>
                             <ParcelsPage />
                         </Route>
-                        <Route path="/">
-                            {/*<Home />*/}
+                        <Route path="/route">
+                            <RoutesPage/>
                         </Route>
                     </Switch>
                 </div>
 
-                <footer className="App-footer">Hello I'm a little footer</footer>
+                {/*<footer className="App-footer">Hello I'm a little footer</footer>*/}
             </Router>
         </div>
     );

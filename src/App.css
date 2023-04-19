@@ -59,3 +59,12 @@
     transform: rotate(360deg);
   }
 }
+
+
+/*.MapContainer {*/
+/*  position: absolute;*/
+/*  top: 0;*/
+/*  left: 0;*/
+/*  height: 300px; !* set a fixed height *!*/
+/*  width: 100%; !* set a fixed width *!*/
+/*}*/
