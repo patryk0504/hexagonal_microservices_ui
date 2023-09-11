@@ -1,6 +1,7 @@
 import React from 'react';
 import { Table } from 'react-bootstrap';
 import ParcelListModal from "./ParcelListModal";
+import GenerateRouteModal from "./GenerateRouteModal";
 
 function CouriersTable({ couriers }) {
     return (
@@ -11,6 +12,8 @@ function CouriersTable({ couriers }) {
                 <th>Email</th>
                 <th>Phone</th>
                 <th>Vehicle</th>
+                <th>Shift Start</th>
+                <th>Shift End</th>
                 <th>Actions</th>
             </tr>
             </thead>
@@ -21,7 +24,26 @@ function CouriersTable({ couriers }) {
                     <td>{courier.email}</td>
                     <td>{courier.phone}</td>
                     <td>{courier.vehicle}</td>
-                    <td><ParcelListModal courierId={courier.id}/></td>
+
+                    <td>
+                        {courier.shiftAddress.map((address) => (
+                            address.role === "START" && (
+                                <div key={address.id}>
+                                    {`${address.shiftAddress.street}, ${address.shiftAddress.city}, ${address.shiftAddress.state}, ${address.shiftAddress.postalCode}, ${address.shiftAddress.country}`}
+                                </div>
+                            )
+                        ))}
+                    </td>
+                    <td>
+                        {courier.shiftAddress.map((address) => (
+                            address.role === "END" && (
+                                <div key={address.id}>
+                                    {`${address.shiftAddress.street}, ${address.shiftAddress.city}, ${address.shiftAddress.state}, ${address.shiftAddress.postalCode}, ${address.shiftAddress.country}`}
+                                </div>
+                            )
+                        ))}
+                    </td>
+                    <td><ParcelListModal courierId={courier.id}/><GenerateRouteModal  courierId={courier.id} /></td>
                 </tr>
             ))}
             </tbody>

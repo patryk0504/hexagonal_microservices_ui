@@ -126,6 +126,16 @@ export default function SideNavbar() {
                         as={Link} to={"/parcels/route"}
                     />
                 </ListItemButton>
+                <ListItemButton>
+                    <ListItemIcon as={Link} to={"/users"}>
+                        <DeleteOutlineIcon/>
+                    </ListItemIcon>
+                    <ListItemText
+                        primary="Users"
+                        style={{color: "inherit", textDecoration: 'none'}}
+                        as={Link} to={"/users"}
+                    />
+                </ListItemButton>
             </List>
         </Menu>
     )

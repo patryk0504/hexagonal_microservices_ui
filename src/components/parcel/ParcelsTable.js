@@ -11,6 +11,8 @@ export default function ParcelsTable({ parcels }) {
                 <th>Weight</th>
                 <th>Dimensions</th>
                 <th>Status</th>
+                <th>Sender Address</th>
+                <th>Recipient Address</th>
             </tr>
             </thead>
             <tbody>
@@ -21,6 +23,24 @@ export default function ParcelsTable({ parcels }) {
                     <td>{parcel.weight}</td>
                     <td>{parcel.dimensions}</td>
                     <td>{parcel.status}</td>
+                    <td>
+                        {parcel.address.map((address) => (
+                            address.role === "SENDER" && (
+                                <div key={address.id}>
+                                    {`${address.address.street}, ${address.address.city}, ${address.address.state}, ${address.address.postalCode}, ${address.address.country}`}
+                                </div>
+                            )
+                        ))}
+                    </td>
+                    <td>
+                        {parcel.address.map((address) => (
+                            address.role === "RECIPIENT" && (
+                                <div key={address.id}>
+                                    {`${address.address.street}, ${address.address.city}, ${address.address.state}, ${address.address.postalCode}, ${address.address.country}`}
+                                </div>
+                            )
+                        ))}
+                    </td>
                 </tr>
             ))}
             </tbody>

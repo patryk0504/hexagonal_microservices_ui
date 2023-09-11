@@ -37,7 +37,7 @@ export default function ParcelListModal({ courierId }) {
                 <Modal.Header closeButton>
                     <Modal.Title>Parcels assigned to courier {courierId}</Modal.Title>
                 </Modal.Header>
-                <Modal.Body>
+                <Modal.Body style={{ overflowX: "auto" }}>
                     <ParcelsTable parcels={parcels}/>
                 </Modal.Body>
                 <Modal.Footer>

@@ -68,7 +68,6 @@ export default function AddressRouteRequest({ selectedAddresses, markers }) {
 
     return (
         <div>
-            <h2>Address Route</h2>
             <Form noValidate validated={validated} onSubmit={handleSubmit}>
                 <Form.Group controlId="selectedAddresses">
                     <Form.Control.Feedback type="invalid">
